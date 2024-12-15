@@ -304,7 +304,7 @@ class Arry
     /**
      * @param array<mixed> $input
      */
-    protected static function getRaw(array $input, string|int ...$key): mixed
+    public static function getRaw(array $input, string|int ...$key): mixed
     {
         $currentArray = $input;
         foreach ($key as $k) {
