@@ -13,6 +13,7 @@ use function is_float;
 use function is_int;
 use function is_string;
 use function json_encode;
+use function ltrim;
 use function sprintf;
 
 /**
@@ -57,7 +58,7 @@ class Arry
         }
 
         if (is_string($value)) {
-            if ((string)(int)$value === $value) {
+            if ((string)(int)$value === ltrim($value, '0')) {
                 return (int)$value;
             }
         }
@@ -66,7 +67,7 @@ class Arry
             return $value;
         }
 
-        throw new InvalidArgumentException(sprintf('could not parse positive integer value: %s', json_encode($value)));
+        return null;
     }
 
     /**
