@@ -43,7 +43,10 @@ class Str
      */
     private static function handleArray(array $input): string
     {
-        $data = array_map(static fn (mixed $m) => self::fromMixed($m), $input);
+        $data = [];
+        foreach ($input as $key => $value) {
+            $data[] = sprintf('%s => %s', $key, self::fromMixed($value));
+        }
 
         return sprintf('[%s]', implode(', ', $data));
     }
