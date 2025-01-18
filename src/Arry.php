@@ -25,6 +25,32 @@ class Arry
     /**
      * @param array<mixed> $input
      */
+    public static function isSet(array $input, string|int ...$key): bool
+    {
+        $currentArray = $input;
+        foreach ($key as $k) {
+            if (!is_array($currentArray)) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'key %s (of %s) should be an array in array %s',
+                        $k,
+                        implode('.', $key),
+                        json_encode($input),
+                    ),
+                );
+            }
+            if (!array_key_exists($k, $currentArray)) {
+                return false;
+            }
+            $currentArray = $currentArray[$k];
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array<mixed> $input
+     */
     public static function getString(array $input, string|int ...$key): ?string
     {
         $value = self::getRaw($input, ...$key) ?? null;

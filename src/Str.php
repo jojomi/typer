@@ -6,8 +6,13 @@ namespace Jojomi\Typer;
 
 use RuntimeException;
 use Stringable;
+use function array_map;
+use function implode;
+use function is_array;
+use function is_float;
 use function is_string;
 use function json_encode;
+use function sprintf;
 
 /**
  * Provides safe ways to convert strings with proper types.
