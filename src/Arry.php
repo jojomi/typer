@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Typer;
 
 use InvalidArgumentException;
+use ValueError;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 use function implode;
@@ -256,6 +257,39 @@ class Arry
     }
 
     /**
+     * Retrieve a key, make sure it is a map (associative array) with string keys.
+     *
+     * @param array<mixed> $input
+     * @return array<string, mixed>|null
+     * @throws ValueError if the value is no array or has incorrect (integer) keys
+     */
+    public static function getMap(array $input, string|int ...$key): ?array
+    {
+        $data = self::getArray($input, ...$key);
+        if ($data === null) {
+            return null;
+        }
+        self::assertMap($data);
+        /** @var array<string, mixed> $data */
+        return $data;
+    }
+
+
+    /**
+     * @param array<mixed> $input
+     * @return array<string, mixed>
+     * @throws ValueError if the value is no array or has incorrect (integer) keys
+     */
+    public static function getRequiredMap(array $input, string|int ...$key): array
+    {
+        self::assertKey($input, ...$key);
+        $result = self::getMap($input, ...$key);
+        Assert::notNull($result);
+
+        return $result;
+    }
+
+    /**
      * @param array<mixed> $input
      *
      * @return array<mixed>
@@ -380,5 +414,18 @@ class Arry
         }
 
         return $currentArray;
+    }
+
+    /**
+     * @param array<mixed> $data
+     * @return void
+     */
+    public static function assertMap(array $data): void
+    {
+        foreach ($data as $k => $v) {
+            if (!is_string($k)) {
+                throw new ValueError(sprintf('key %s should be a string', Str::fromMixed($k)));
+            }
+        }
     }
 }
