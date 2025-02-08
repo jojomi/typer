@@ -416,16 +416,52 @@ class Arry
         return $currentArray;
     }
 
-    /**
-     * @param array<mixed> $data
-     * @return void
-     */
-    public static function assertMap(array $data): void
+    public static function assertMap(mixed $data): void
     {
+        if (!is_array($data)) {
+            throw new ValueError('no array');
+        }
         foreach ($data as $k => $v) {
             if (!is_string($k)) {
                 throw new ValueError(sprintf('key %s should be a string', Str::fromMixed($k)));
             }
         }
+    }
+
+    /**
+     * @param mixed $data
+     * @return void
+     */
+    public static function assertArray(mixed $data): void
+    {
+        if (!is_array($data)) {
+            throw new ValueError('not an array');
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function asMap(mixed $data): array
+    {
+        if (!self::isMap($data)) {
+            throw new ValueError('all keys need to be strings');
+        }
+
+        /** @var array<string, mixed> $data */
+        return $data;
+    }
+
+    public static function isMap(mixed $input): bool
+    {
+        if (!is_array($input)) {
+            return false;
+        }
+        foreach ($input as $k => $v) {
+            if (!is_string($k)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
