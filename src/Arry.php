@@ -464,4 +464,102 @@ class Arry
         }
         return true;
     }
+
+
+    /**
+     * @return array<string, mixed>
+     * @throws ValueError Wenn das Array nicht die Anforderungen erfüllt
+     */
+    public static function assertStringKeyArray(mixed $input): array
+    {
+        if (!is_array($input)) {
+            throw new ValueError('Ungültiger Typ, Array erwartet');
+        }
+
+        foreach ($input as $key => $unused) {
+            if (!is_string($key)) {
+                throw new ValueError(sprintf('Ungültiger Typ von Array-Key %d (string erwartet)', $key));
+            }
+        }
+
+        /** @var array<string, mixed> $result */
+        $result = $input;
+        return $result;
+    }
+
+    /**
+     * @return array<int, mixed>
+     * @throws ValueError Wenn das Array nicht die Anforderungen erfüllt
+     */
+    public static function assertIntKeyArray(mixed $input): array
+    {
+        if (!is_array($input)) {
+            throw new ValueError('Ungültiger Typ, Array erwartet');
+        }
+
+        foreach ($input as $key => $unused) {
+            if (!is_int($key)) {
+                throw new ValueError(sprintf('Ungültiger Typ von Array-Key %s (int erwartet)', $key));
+            }
+        }
+
+        /** @var array<int, mixed> $result */
+        $result = $input;
+        return $result;
+    }
+
+    /**
+     * @return list<mixed>
+     * @throws ValueError Wenn das Array nicht die Anforderungen erfüllt
+     * @throws MissingArrayKeyException
+     */
+    public static function assertList(mixed $input): array
+    {
+        if (!is_array($input)) {
+            throw new ValueError('Ungültiger Typ, Array erwartet');
+        }
+
+        if (count($input) === 0) {
+            return $input;
+        }
+
+        $lastIndex = count($input) - 1;
+        $index = 0;
+        do {
+            if (!array_key_exists($index, $input)) {
+                throw new MissingArrayKeyException($input, $index, sprintf('Array ist keine Liste, Index %d fehlt.', $index));
+            }
+            $index++;
+        } while ($index < $lastIndex);
+
+        /** @var list<mixed> $result */
+        $result = $input;
+        return $result;
+    }
+
+    /**
+     * @param array<array-key, mixed> $source
+     * @return list<mixed>|null
+     */
+    public static function getList(array $source, string $path): ?array
+    {
+        $value = self::getArray($source, $path);
+        if ($value === null) {
+            return null;
+        }
+        return self::assertList($value);
+    }
+
+    /**
+     * @param array<array-key, mixed> $source
+     * @return list<mixed>
+     * @throws MissingArrayKeyException
+     */
+    public static function getRequiredList(array $source, string $path): array
+    {
+        if (!self::isSet($source, $path)) {
+            throw new MissingArrayKeyException($source, $path);
+        }
+        return self::getList($source, $path) ?? throw new MissingArrayKeyException($source, $path);
+    }
 }
